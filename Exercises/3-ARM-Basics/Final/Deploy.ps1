@@ -1,24 +1,22 @@
-﻿Set-Location -Path "<YourPath>\Lab1\"
-Login-AzureRmAccount -SubscriptionName "<Subscription Name>"
-
-$rg="Demo-RG"
+﻿$rg="Demo-RG"
 $loc="North Europe"
-$tf = ".\azuredeploy.json"
-$tpf =".\azuredeploy.parameters.json"
+$tf = "azuredeploy.json"
+$tpf ="azuredeploy.parameters.json"
 
 $ss =  ConvertTo-SecureString "secre@t!" -AsPlainText -Force
 
 #Create RG
-New-AzureRmResourceGroup -Name $rg -Location $loc
+az group create --name $rg --location $loc
 
 #Validate
-Test-AzureRmResourceGroupDeployment -ResourceGroupName $rg -TemplateFile "$tf" -TemplateParameterFile "$tpf" -Verbose
+Test-AzResourceGroupDeployment -ResourceGroupName $rg -TemplateFile "$tf" -TemplateParameterFile "$tpf" -Verbose
 
 #Deploy
-NEW-AzureRmResourceGroupDeployment -ResourceGroupName $rg -TemplateFile $tf -TemplateParameterFile $tpf -Verbose 
+az deployment group create -g $rg --template-file  $tf --parameters $tpf
 
 #Deploy - pass parameters, securestring
-NEW-AzureRmResourceGroupDeployment -ResourceGroupName $rg -TemplateFile $tf -TemplateParameterFile $tpf -p-string "Hello World 2" -p-securestring $ss
+az deployment group create -g $rg --template-file  $tf --parameters $tpf  p-string="Hello World 2" 
 
-#Deploy Failing 
-NEW-AzureRmResourceGroupDeployment -ResourceGroupName $rg -TemplateFile $tf -TemplateParameterFile $tpf -p-string "Hello World"
+az deployment group create -g $rg --template-file  $tf --parameters $tpf  p-string="Hello World 2" p-securestring=$ss
+
+
